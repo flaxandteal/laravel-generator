@@ -196,7 +196,6 @@ class BaseCommand extends Command
     /**
      * @param $fileName
      * @param string $prompt
-     * 
      * @return bool
      */
     protected function confirmOverwrite($fileName, $prompt = '')
