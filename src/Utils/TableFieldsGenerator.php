@@ -116,9 +116,13 @@ class TableFieldsGenerator
     public static function getPrimaryKeyOfTable($tableName)
     {
         $schema = DB::getDoctrineSchemaManager();
-        $column = $schema->listTableDetails($tableName)->getPrimaryKey();
+        $indexes = collect($schema->listTableIndexes($tableName));
 
-        return $column ? $column->getColumns()[0] : '';
+        $primaryKey = $indexes->first(function ($index) {
+            return $index->isPrimary() && 1 === count($index->getColumns());
+        });
+
+        return !empty($primaryKey) ? $primaryKey->getColumns()[0] : null;
     }
 
     /**
