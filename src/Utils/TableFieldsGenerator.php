@@ -9,15 +9,20 @@ use InfyOm\Generator\Common\GeneratorFieldRelation;
 class GeneratorForeignKey
 {
     /** @var string */
-    public $name, $localField, $foreignField, $foreignTable, $onUpdate,$onDelete;
+    public $name;
+    public $localField;
+    public $foreignField;
+    public $foreignTable;
+    public $onUpdate;
+    public $onDelete;
 }
 
 class GeneratorTable
 {
-    /** @var  string */
+    /** @var string */
     public $primaryKey;
 
-    /** @var  GeneratorForeignKey[] */
+    /** @var GeneratorForeignKey[] */
     public $foreignKeys;
 }
 
@@ -61,7 +66,7 @@ class TableFieldsGenerator
     }
 
     /**
-     * Prepares array of GeneratorField from table columns
+     * Prepares array of GeneratorField from table columns.
      */
     public function prepareFieldsFromTable()
     {
@@ -127,7 +132,7 @@ class TableFieldsGenerator
     }
 
     /**
-     * Get primary key of given table
+     * Get primary key of given table.
      *
      * @param string $tableName
      *
@@ -146,7 +151,7 @@ class TableFieldsGenerator
     }
 
     /**
-     * Get timestamp columns from config
+     * Get timestamp columns from config.
      *
      * @return array the set of [created_at column name, updated_at column name]
      */
@@ -164,7 +169,7 @@ class TableFieldsGenerator
     }
 
     /**
-     * Generates integer text field for database
+     * Generates integer text field for database.
      *
      * @param string                       $dbType
      * @param \Doctrine\DBAL\Schema\Column $column
@@ -192,7 +197,7 @@ class TableFieldsGenerator
     }
 
     /**
-     * Check if key is primary key and sets field options
+     * Check if key is primary key and sets field options.
      *
      * @param GeneratorField $field
      *
@@ -212,7 +217,7 @@ class TableFieldsGenerator
     }
 
     /**
-     * Generates field
+     * Generates field.
      *
      * @param \Doctrine\DBAL\Schema\Column $column
      * @param $dbType
@@ -231,7 +236,7 @@ class TableFieldsGenerator
     }
 
     /**
-     * Generates number field
+     * Generates number field.
      *
      * @param \Doctrine\DBAL\Schema\Column $column
      * @param string                       $dbType
@@ -249,7 +254,7 @@ class TableFieldsGenerator
     }
 
     /**
-     * Prepares relations (GeneratorFieldRelation) array from table foreign keys
+     * Prepares relations (GeneratorFieldRelation) array from table foreign keys.
      */
     public function prepareRelations()
     {
@@ -258,7 +263,7 @@ class TableFieldsGenerator
     }
 
     /**
-     * Prepares foreign keys from table with required details
+     * Prepares foreign keys from table with required details.
      *
      * @return GeneratorTable[]
      */
@@ -298,7 +303,7 @@ class TableFieldsGenerator
     }
 
     /**
-     * Prepares relations array from table foreign keys
+     * Prepares relations array from table foreign keys.
      *
      * @param GeneratorTable[] $tables
      */
@@ -360,12 +365,13 @@ class TableFieldsGenerator
      * Detects many to many relationship
      * If table has only two foreign keys
      * Both foreign keys are primary key in foreign table
-     * Also one is from model table and one is from diff table
+     * Also one is from model table and one is from diff table.
      *
      * @param GeneratorTable[] $tables
-     * @param string $tableName
-     * @param GeneratorTable $modelTable
-     * @param string $modelTableName
+     * @param string           $tableName
+     * @param GeneratorTable   $modelTable
+     * @param string           $modelTableName
+     *
      * @return bool|GeneratorFieldRelation
      */
     private function isManyToMany($tables, $tableName, $modelTable, $modelTableName)
@@ -419,17 +425,19 @@ class TableFieldsGenerator
         }
 
         $modelName = model_name_from_table_name($manyToManyTable);
+
         return GeneratorFieldRelation::parseRelation('mtm,'.$modelName.','.$tableName);
     }
 
     /**
      * Detects if one to one relationship is there
      * If foreign key of table is primary key of foreign table
-     * Also foreign key field is primary key of this table
+     * Also foreign key field is primary key of this table.
      *
-     * @param string $primaryKey
+     * @param string              $primaryKey
      * @param GeneratorForeignKey $foreignKey
-     * @param string $modelTablePrimary
+     * @param string              $modelTablePrimary
+     *
      * @return bool
      */
     private function isOneToOne($primaryKey, $foreignKey, $modelTablePrimary)
@@ -446,11 +454,12 @@ class TableFieldsGenerator
     /**
      * Detects if one to many relationship is there
      * If foreign key of table is primary key of foreign table
-     * Also foreign key field is not primary key of this table
+     * Also foreign key field is not primary key of this table.
      *
-     * @param string $primaryKey
+     * @param string              $primaryKey
      * @param GeneratorForeignKey $foreignKey
-     * @param string $modelTablePrimary
+     * @param string              $modelTablePrimary
+     *
      * @return bool
      */
     private function isOneToMany($primaryKey, $foreignKey, $modelTablePrimary)
@@ -466,10 +475,11 @@ class TableFieldsGenerator
 
     /**
      * Detect many to one relationship on model table
-     * If foreign key of model table is primary key of foreign table
+     * If foreign key of model table is primary key of foreign table.
      *
      * @param GeneratorTable[] $tables
-     * @param GeneratorTable $modelTable
+     * @param GeneratorTable   $modelTable
+     *
      * @return array
      */
     private function detectManyToOne($tables, $modelTable)
