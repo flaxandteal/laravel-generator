@@ -8,25 +8,26 @@ use InfyOm\Generator\Common\GeneratorFieldRelation;
 
 class TableFieldsGenerator
 {
-    /** @var  string */
-    public $tableName, $primaryKey;
+    /** @var string */
+    public $tableName;
+    public $primaryKey;
 
-    /** @var  boolean */
+    /** @var bool */
     public $defaultSearchable;
 
-    /** @var  array */
+    /** @var array */
     public $timestamps;
 
     /** @var \Doctrine\DBAL\Schema\AbstractSchemaManager */
     private $schemaManager;
 
-    /** @var  \Doctrine\DBAL\Schema\Column[] */
+    /** @var \Doctrine\DBAL\Schema\Column[] */
     private $columns;
 
-    /** @var  GeneratorField[] */
+    /** @var GeneratorField[] */
     public $fields;
 
-    /** @var  GeneratorFieldRelation[] */
+    /** @var GeneratorFieldRelation[] */
     public $relations;
 
     public function __construct($tableName)
@@ -47,7 +48,6 @@ class TableFieldsGenerator
     public function prepareFieldsFromTable()
     {
         foreach ($this->columns as $column) {
-
             $type = $column->getType()->getName();
 
             switch ($type) {
@@ -61,8 +61,8 @@ class TableFieldsGenerator
                     $field = $this->generateIntFieldInput($column, 'bigInteger');
                     break;
                 case 'boolean':
-                    $name = title_case(str_replace("_", " ", $column->getName()));
-                    $field = $this->generateField($column, 'bigInteger', 'checkbox,'.$name.",1");
+                    $name = title_case(str_replace('_', ' ', $column->getName()));
+                    $field = $this->generateField($column, 'bigInteger', 'checkbox,'.$name.',1');
                     break;
                 case 'datetime':
                     $field = $this->generateField($column, 'datetime', 'date');
@@ -142,8 +142,9 @@ class TableFieldsGenerator
     }
 
     /**
-     * @param string $dbType
+     * @param string                       $dbType
      * @param \Doctrine\DBAL\Schema\Column $column
+     *
      * @return GeneratorField
      */
     private function generateIntFieldInput($column, $dbType)
@@ -151,7 +152,7 @@ class TableFieldsGenerator
         $field = new GeneratorField();
         $field->name = $column->getName();
         $field->parseDBType($dbType);
-        $field->htmlType = "number";
+        $field->htmlType = 'number';
 
         if ($column->getAutoincrement()) {
             $field->dbInput .= ',true';
@@ -168,6 +169,7 @@ class TableFieldsGenerator
 
     /**
      * @param GeneratorField $field
+     *
      * @return GeneratorField
      */
     private function checkForPrimary(GeneratorField $field)
@@ -187,6 +189,7 @@ class TableFieldsGenerator
      * @param \Doctrine\DBAL\Schema\Column $column
      * @param $dbType
      * @param $htmlType
+     *
      * @return GeneratorField
      */
     private function generateField($column, $dbType, $htmlType)
@@ -201,15 +204,16 @@ class TableFieldsGenerator
 
     /**
      * @param \Doctrine\DBAL\Schema\Column $column
-     * @param string $dbType
+     * @param string                       $dbType
+     *
      * @return GeneratorField
      */
     private function generateNumberInput($column, $dbType)
     {
         $field = new GeneratorField();
         $field->name = $column->getName();
-        $field->parseDBType($dbType.',' . $column->getPrecision() . ',' . $column->getScale());
-        $field->htmlType = "number";
+        $field->parseDBType($dbType.','.$column->getPrecision().','.$column->getScale());
+        $field->htmlType = 'number';
 
         return $this->checkForPrimary($field);
     }
@@ -233,14 +237,14 @@ class TableFieldsGenerator
             }
             $formattedForeignKeys = [];
             $tableForeignKeys = $table->getForeignKeys();
-            foreach($tableForeignKeys as $tableForeignKey) {
+            foreach ($tableForeignKeys as $tableForeignKey) {
                 $formattedForeignKeys[] = [
-                    'name' => $tableForeignKey->getName(),
-                    'localField' => $tableForeignKey->getLocalColumns()[0],
+                    'name'         => $tableForeignKey->getName(),
+                    'localField'   => $tableForeignKey->getLocalColumns()[0],
                     'foreignField' => $tableForeignKey->getForeignColumns()[0],
                     'foreignTable' => $tableForeignKey->getForeignTableName(),
-                    'onUpdate' => $tableForeignKey->onUpdate(),
-                    'onDelete' => $tableForeignKey->onDelete()
+                    'onUpdate'     => $tableForeignKey->onUpdate(),
+                    'onDelete'     => $tableForeignKey->onDelete(),
                 ];
             }
 
@@ -281,18 +285,17 @@ class TableFieldsGenerator
 
             foreach ($foreignKeys as $foreignKey) {
                 if ($foreignKey['foreignTable'] == $modelTableName) {
-
                     $isOneToOne = $this->isOneToOne($primary, $foreignKey, $modelTable['primary']);
                     if ($isOneToOne) {
                         $modelName = model_name_from_table_name($tableName);
-                        $this->relations[] = GeneratorFieldRelation::parseRelation('1t1,' . $modelName);
+                        $this->relations[] = GeneratorFieldRelation::parseRelation('1t1,'.$modelName);
                         continue;
                     }
 
                     $isOneToMany = $this->isOneToMany($primary, $foreignKey, $modelTable['primary']);
                     if ($isOneToMany) {
                         $modelName = model_name_from_table_name($tableName);
-                        $this->relations[] = GeneratorFieldRelation::parseRelation('1tm,' . $modelName);
+                        $this->relations[] = GeneratorFieldRelation::parseRelation('1tm,'.$modelName);
                         continue;
                     }
                 }
@@ -338,7 +341,8 @@ class TableFieldsGenerator
         }
 
         $modelName = model_name_from_table_name($manyToManyTable);
-        return GeneratorFieldRelation::parseRelation('mtm,' . $modelName.','.$tableName);
+
+        return GeneratorFieldRelation::parseRelation('mtm,'.$modelName.','.$tableName);
     }
 
     private function isOneToOne($primaryKey, $foreignKey, $modelTablePrimary)
@@ -373,7 +377,7 @@ class TableFieldsGenerator
             $foreignTable = $foreignKey['foreignTable'];
             $foreignField = $foreignKey['foreignField'];
 
-            if($foreignField == $tables[$foreignTable]['primary']) {
+            if ($foreignField == $tables[$foreignTable]['primary']) {
                 $modelName = model_name_from_table_name($foreignTable);
                 $manyToOneRelations[] = GeneratorFieldRelation::parseRelation('mt1,'.$modelName);
             }
