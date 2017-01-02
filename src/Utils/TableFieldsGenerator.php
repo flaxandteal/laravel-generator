@@ -384,6 +384,7 @@ class TableFieldsGenerator
 
         // many to many model table name
         $manyToManyTable = '';
+        $otherTableName = '';
 
         $foreignKeys = $table->foreignKeys;
         $primary = $table->primaryKey;
@@ -413,21 +414,34 @@ class TableFieldsGenerator
                 // if foreign field is not primary key of foreign table
                 // then it can not be many to many
                 if ($foreignField != $foreignTable->primaryKey) {
-                    return false;
-                    break;
+                    continue;
                 }
 
                 // if foreign field is primary key of this table
                 // then it can not be many to many
-                if ($foreignField == $primary) {
-                    return false;
+                if ($foreignField == $primary && $foreignTableName == $tableName) {
+                    continue;
+                }
+
+                // if this table has other foreign keys (pivot values)
+                $otherTableName = $foreignTableName;
+
+                // if this key is not on the original table, we have already found
+                // a many-to-many relationship. Otherwise, it may be reflexive, or
+                // this is just the original key.
+                if ($otherTableName != $modelTableName) {
+                    break;
                 }
             }
         }
 
-        $modelName = model_name_from_table_name($manyToManyTable);
+        if ($otherTableName != '') {
+            $modelName = model_name_from_table_name($otherTableName);
 
-        return GeneratorFieldRelation::parseRelation('mtm,'.$modelName.','.$tableName);
+            return GeneratorFieldRelation::parseRelation('mtm,'.$modelName.','.$tableName);
+        }
+
+        return false;
     }
 
     /**
