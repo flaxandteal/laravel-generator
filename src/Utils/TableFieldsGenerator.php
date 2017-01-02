@@ -2,6 +2,7 @@
 
 namespace InfyOm\Generator\Utils;
 
+use App;
 use DB;
 use InfyOm\Generator\Common\GeneratorField;
 use InfyOm\Generator\Common\GeneratorFieldRelation;
@@ -54,7 +55,7 @@ class TableFieldsGenerator
     {
         $this->tableName = $tableName;
 
-        $this->schemaManager = DB::getDoctrineSchemaManager();
+        $this->schemaManager = $this->selectSchemaManager();
         $platform = $this->schemaManager->getDatabasePlatform();
         $platform->registerDoctrineTypeMapping('enum', 'string');
         $platform->registerDoctrineTypeMapping('json', 'text');
@@ -510,5 +511,29 @@ class TableFieldsGenerator
         }
 
         return $manyToOneRelations;
+    }
+
+    /**
+     * Get a schema manager for the DB connection, managed by laravel-doctrine if available.
+     *
+     * @return Doctrine/DBAL/Schema/AbstractSchemaManager
+     */
+    private function selectSchemaManager()
+    {
+        // Check whether laravel-doctrine has registered an EntityManager factory
+        $hasEntityManager = App::offsetExists('em');
+
+        // If so, use it, as this will be customized with laravel-doctrine's settings,
+        // otherwise, fall back to Laravel's default in-built schema manager retrieval.
+        if ($hasEntityManager) {
+            $entityManager = App::make('em');
+            $connection = $entityManager->getConnection();
+            $schemaManager = $connection->getSchemaManager();
+        }
+        else {
+            $schemaManager = DB::getDoctrineSchemaManager();
+        }
+
+        return $schemaManager;
     }
 }
