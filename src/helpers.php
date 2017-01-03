@@ -208,3 +208,21 @@ if (!function_exists('model_name_from_table_name')) {
         return ucfirst(camel_case(str_singular($tableName)));
     }
 }
+
+if (!function_exists('relation_name_from_field')) {
+    /**
+     * generates relation name from foreign key field.
+     *
+     * @param string $tableName
+     *
+     * @return string
+     */
+    function relation_name_from_field($field)
+    {
+        if (substr($field, -3) === '_id') {
+            $field = substr($field, 0, -3);
+        }
+
+        return camel_case($field);
+    }
+}
