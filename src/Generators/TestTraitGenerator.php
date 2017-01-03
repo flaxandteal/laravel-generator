@@ -58,9 +58,16 @@ class TestTraitGenerator extends BaseGenerator
             $fieldData = "'".$field->name."' => ".'$fake->';
 
             switch ($field->fieldType) {
+                case 'decimal':
                 case 'integer':
                 case 'float':
                     $fakerData = 'randomDigitNotNull';
+                    break;
+                case 'uuid':
+                    $fakerData = 'uuid';
+                    break;
+                case 'json':
+                    $fakerData = 'bothify(\'{"????": "##??##", "???": #.##, "?": [#, {"??": "#?#"}]}\')';
                     break;
                 case 'string':
                     $fakerData = 'word';
@@ -83,6 +90,7 @@ class TestTraitGenerator extends BaseGenerator
 
             $fields[] = $fieldData;
         }
+        print_r($fields);
 
         return $fields;
     }

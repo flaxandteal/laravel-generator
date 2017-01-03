@@ -58,7 +58,8 @@ class TableFieldsGenerator
         $this->schemaManager = $this->selectSchemaManager();
         $platform = $this->schemaManager->getDatabasePlatform();
         $platform->registerDoctrineTypeMapping('enum', 'string');
-        $platform->registerDoctrineTypeMapping('json', 'text');
+        $platform->registerDoctrineTypeMapping('json', 'json');
+        $platform->registerDoctrineTypeMapping('uuid', 'guid');
 
         $this->columns = $this->schemaManager->listTableColumns($tableName);
 
@@ -112,6 +113,12 @@ class TableFieldsGenerator
                     break;
                 case 'text':
                     $field = $this->generateField($column, 'text', 'textarea');
+                    break;
+                case 'json':
+                    $field = $this->generateField($column, 'json', 'textarea');
+                    break;
+                case 'guid':
+                    $field = $this->generateField($column, 'uuid', 'text');
                     break;
                 default:
                     $field = $this->generateField($column, 'string', 'text');
