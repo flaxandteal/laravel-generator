@@ -381,6 +381,14 @@ class TableFieldsGenerator
      */
     private function isManyToMany($tables, $tableName, $modelTable, $modelTableName)
     {
+        $modelName = model_name_from_table_name($modelTableName);
+
+        // if this is a pivot, the original model name should appear
+        if (strpos(snake_case($tableName), snake_case($modelName)) === false &&
+            strpos(snake_case($tableName), str_plural(snake_case($modelName))) === false) {
+            return false;
+        }
+
         // get table details
         $table = $tables[$tableName];
 
@@ -413,6 +421,14 @@ class TableFieldsGenerator
                     $foreignTable = $tables[$foreignTableName];
                     // get the many to many model table name
                     $manyToManyTable = $foreignTableName;
+
+                    // if this is a pivot, the foreign model name should appear, otherwise
+                    // it is more likely to be a model with its own foreign keys
+                    $foreignModelName = model_name_from_table_name($foreignTableName);
+                    if (strpos(snake_case($tableName), snake_case($foreignModelName)) === false &&
+                        strpos(snake_case($tableName), str_plural(snake_case($foreignModelName))) === false) {
+                        continue;
+                    }
                 }
 
                 // if foreign field is not primary key of foreign table
