@@ -59,21 +59,30 @@ class ModelGenerator extends BaseGenerator
 
         $fillables = [];
 
+        if ($this->commandData->getOption('primary')) {
+            $primaryKey = $this->commandData->getOption('primary');
+            $primary = infy_tab()."protected \$primaryKey = '".$primaryKey."';\n";
+        } else {
+            $primaryKey = '';
+            $primary = '';
+        }
+
+        $uuidPrimaryKey = false;
+
         foreach ($this->commandData->fields as $field) {
             if ($field->isFillable) {
                 $fillables[] = "'".$field->name."'";
             }
+            if (($field->isPrimary || $field->name == $primaryKey) && $field->fieldType == 'uuid') {
+                $uuidPrimaryKey = true;
+            }
         }
+
+        $templateData = $this->fillUuidModel($templateData, $uuidPrimaryKey);
 
         $templateData = $this->fillDocs($templateData);
 
         $templateData = $this->fillTimestamps($templateData);
-
-        if ($this->commandData->getOption('primary')) {
-            $primary = infy_tab()."protected \$primaryKey = '".$this->commandData->getOption('primary')."';\n";
-        } else {
-            $primary = '';
-        }
 
         $templateData = str_replace('$PRIMARY$', $primary, $templateData);
 
@@ -111,6 +120,22 @@ class ModelGenerator extends BaseGenerator
                 '$SOFT_DELETE_DATES$', infy_nl_tab()."protected \$dates = ['".$deletedAtTimestamp."'];\n",
                 $templateData
             );
+        }
+
+        return $templateData;
+    }
+
+    private function fillUuidModel($templateData, $uuidPrimaryKey)
+    {
+        if (!$uuidPrimaryKey || !$this->commandData->getOption('uuidModel')) {
+            $templateData = str_replace('$UUID_MODEL_IMPORT$', '', $templateData);
+            $templateData = str_replace('$UUID_MODEL$', '', $templateData);
+        } else {
+            $templateData = str_replace(
+                '$UUID_MODEL_IMPORT$', "use Alsofronie\\Uuid\\UuidModelTrait;\n",
+                $templateData
+            );
+            $templateData = str_replace('$UUID_MODEL$', infy_tab()."use UuidModelTrait;\n", $templateData);
         }
 
         return $templateData;
