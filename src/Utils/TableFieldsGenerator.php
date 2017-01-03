@@ -354,7 +354,7 @@ class TableFieldsGenerator
                     $isOneToOne = $this->isOneToOne($primary, $foreignKey, $modelTable->primaryKey);
                     if ($isOneToOne) {
                         $modelName = model_name_from_table_name($tableName);
-                        $this->relations[] = GeneratorFieldRelation::parseRelation('1t1,'.$modelName);
+                        $this->relations[] = GeneratorFieldRelation::parseRelation('1t1,'.$modelName.','.$foreignKey->localField.','.$foreign->foreignField);
                         continue;
                     }
 
@@ -525,7 +525,7 @@ class TableFieldsGenerator
 
             if ($foreignField == $foreignTable->primaryKey) {
                 $modelName = model_name_from_table_name($foreignTableName);
-                $manyToOneRelations[] = GeneratorFieldRelation::parseRelation('mt1,'.$modelName);
+                $manyToOneRelations[] = GeneratorFieldRelation::parseRelation('mt1,'.$modelName.','.$foreignKey->localField.','.$foreignField);
             }
         }
 

@@ -22,9 +22,14 @@ class GeneratorFieldRelation
     public function getRelationFunctionText()
     {
         $modelName = $this->inputs[0];
+
+        $functionName = camel_case($modelName);
+        if (count($this->inputs) > 1) {
+            $functionName = relation_name_from_field($this->inputs[1]);
+        }
+
         switch ($this->type) {
             case '1t1':
-                $functionName = camel_case($modelName);
                 $relation = 'hasOne';
                 $relationClass = 'HasOne';
                 break;
@@ -34,7 +39,6 @@ class GeneratorFieldRelation
                 $relationClass = 'HasMany';
                 break;
             case 'mt1':
-                $functionName = camel_case($modelName);
                 $relation = 'belongsTo';
                 $relationClass = 'BelongsTo';
                 break;
