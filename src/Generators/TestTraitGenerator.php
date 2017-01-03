@@ -93,7 +93,6 @@ class TestTraitGenerator extends BaseGenerator
 
             $fields[] = $fieldData;
         }
-        print_r($fields);
 
         return $fields;
     }
