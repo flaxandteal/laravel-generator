@@ -63,7 +63,7 @@ class TestTraitGenerator extends BaseGenerator
                 case 'float':
                     $fakerData = 'randomDigitNotNull';
                     break;
-                case 'boolean':
+                case 'bool':
                     $fakerData = 'boolean';
                     break;
                 case 'uuid':
