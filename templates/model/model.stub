@@ -4,10 +4,12 @@ namespace $NAMESPACE_MODEL$;
 
 use $NAMESPACE_MODEL_EXTEND$ as Model;
 $SOFT_DELETE_IMPORT$
+$UUID_MODEL_IMPORT$
 $DOCS$
 class $MODEL_NAME$ extends Model
 {
 $SOFT_DELETE$
+$UUID_MODEL$
     public $table = '$TABLE_NAME$';
     $TIMESTAMPS$
 $SOFT_DELETE_DATES$
