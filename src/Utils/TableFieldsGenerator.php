@@ -319,7 +319,7 @@ class TableFieldsGenerator
         $this->relations = [];
 
         // detects many to one rules for model table
-        $manyToOneRelations = $this->detectManyToOne($tables, $modelTable);
+        $manyToOneRelations = $this->detectManyToOne($tables, $modelTable, $modelTableName);
 
         if (count($manyToOneRelations) > 0) {
             $this->relations = array_merge($this->relations, $manyToOneRelations);
@@ -498,18 +498,26 @@ class TableFieldsGenerator
      *
      * @return array
      */
-    private function detectManyToOne($tables, $modelTable)
+    private function detectManyToOne($tables, $modelTable, $modelTableName)
     {
         $manyToOneRelations = [];
 
         $foreignKeys = $modelTable->foreignKeys;
 
         foreach ($foreignKeys as $foreignKey) {
-            $foreignTable = $foreignKey->foreignTable;
+            $foreignTableName = $foreignKey->foreignTable;
             $foreignField = $foreignKey->foreignField;
 
-            if ($foreignField == $tables[$foreignTable]->primaryKey) {
-                $modelName = model_name_from_table_name($foreignTable);
+            // Check for a reflexive relationship
+            if ($foreignTableName == $modelTableName) {
+                $foreignTable = $modelTable;
+            }
+            else {
+                $foreignTable = $tables[$foreignTableName];
+            }
+
+            if ($foreignField == $foreignTable->primaryKey) {
+                $modelName = model_name_from_table_name($foreignTableName);
                 $manyToOneRelations[] = GeneratorFieldRelation::parseRelation('mt1,'.$modelName);
             }
         }
