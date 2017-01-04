@@ -113,6 +113,8 @@ return [
         'tables_searchable_default' => false,
 
         'uuidModel' => false,
+
+        'usePopulator' => false,
     ],
 
     /*
