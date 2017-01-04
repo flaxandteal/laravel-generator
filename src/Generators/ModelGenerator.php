@@ -256,7 +256,6 @@ class ModelGenerator extends BaseGenerator
                     $rule .= "'boolean'";
                     break;
                 case 'dateTime':
-                case 'dateTimeTz':
                     $rule .= "'datetime'";
                     break;
                 case 'date':

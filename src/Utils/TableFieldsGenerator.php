@@ -93,9 +93,6 @@ class TableFieldsGenerator
                 case 'datetime':
                     $field = $this->generateField($column, 'datetime', 'date');
                     break;
-                case 'datetimetz':
-                    $field = $this->generateField($column, 'dateTimeTz', 'date');
-                    break;
                 case 'date':
                     $field = $this->generateField($column, 'date', 'date');
                     break;
