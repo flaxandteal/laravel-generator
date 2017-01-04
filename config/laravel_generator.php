@@ -115,6 +115,8 @@ return [
         'uuidModel' => false,
 
         'usePopulator' => false,
+
+        'routeFormat' => 'camel',
     ],
 
     /*

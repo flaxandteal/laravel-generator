@@ -52,6 +52,8 @@ class GeneratorConfig
     public $mHuman;
     public $mHumanPlural;
 
+    public $routeSuffix;
+
     public $forceMigrate;
 
     /* Generator Options */
@@ -95,6 +97,7 @@ class GeneratorConfig
         $this->prepareAddOns();
         $this->prepareOptions($commandData);
         $this->prepareModelNames();
+        $this->prepareRouteSuffix();
         $this->preparePrefixes();
         $this->loadPaths();
         $this->prepareTableName();
@@ -224,6 +227,8 @@ class GeneratorConfig
         $commandData->addDynamicVariable('$MODEL_NAME_HUMAN$', $this->mHuman);
         $commandData->addDynamicVariable('$MODEL_NAME_PLURAL_HUMAN$', $this->mHumanPlural);
 
+        $commandData->addDynamicVariable('$ROUTE_SUFFIX$', $this->routeSuffix);
+
         if (!empty($this->prefixes['route'])) {
             $commandData->addDynamicVariable('$ROUTE_NAMED_PREFIX$', $this->prefixes['route'].'.');
             $commandData->addDynamicVariable('$ROUTE_PREFIX$', str_replace('.', '/', $this->prefixes['route']).'/');
@@ -272,6 +277,23 @@ class GeneratorConfig
         }
     }
 
+    public function prepareRouteSuffix()
+    {
+        $routeFormat = $this->getOption('routeFormat');
+
+        switch ($routeFormat) {
+            case 'dashed':
+                $this->routeSuffix = $this->mDashedPlural;
+                break;
+            case 'snake':
+                $this->routeSuffix = $this->mSnakePlural;
+                break;
+            case 'camel':
+            default:
+                $this->routeSuffix = $this->mCamelPlural;
+        }
+    }
+
     public function preparePrimaryName()
     {
         if ($this->getOption('primary')) {
@@ -312,6 +334,7 @@ class GeneratorConfig
         $this->options['softDelete'] = config('infyom.laravel_generator.options.softDelete', false);
         $this->options['uuidModel'] = config('infyom.laravel_generator.options.uuidModel', false);
         $this->options['usePopulator'] = config('infyom.laravel_generator.options.usePopulator', false);
+        $this->options['routeFormat'] = config('infyom.laravel_generator.options.routeFormat', 'camel');
         if (!empty($this->options['skip'])) {
             $this->options['skip'] = array_map('trim', explode(',', $this->options['skip']));
         }
