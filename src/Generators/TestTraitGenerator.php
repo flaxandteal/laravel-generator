@@ -17,16 +17,25 @@ class TestTraitGenerator extends BaseGenerator
     /** @var string */
     private $fileName;
 
+    /** @var boolean */
+    private $usePopulator;
+
     public function __construct(CommandData $commandData)
     {
         $this->commandData = $commandData;
         $this->path = $commandData->config->pathApiTestTraits;
         $this->fileName = 'Make'.$this->commandData->modelName.'Trait.php';
+        $this->usePopulator = $commandData->getOption('usePopulator', false);
     }
 
     public function generate()
     {
-        $templateData = get_template('test.trait', 'laravel-generator');
+        if ($this->usePopulator) {
+            $templateData = get_template('test.trait_populator', 'laravel-generator');
+        }
+        else {
+            $templateData = get_template('test.trait', 'laravel-generator');
+        }
 
         $templateData = $this->fillTemplate($templateData);
 
@@ -40,8 +49,10 @@ class TestTraitGenerator extends BaseGenerator
     {
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
 
-        $templateData = str_replace('$FIELDS$', implode(','.infy_nl_tab(1, 3), $this->generateFields()),
-            $templateData);
+        if (!$this->usePopulator) {
+            $templateData = str_replace('$FIELDS$', implode(','.infy_nl_tab(1, 3), $this->generateFields()),
+                $templateData);
+        }
 
         return $templateData;
     }
